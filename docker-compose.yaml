@@ -1,110 +1,170 @@
-version: '3.7'
-
-# NOTE: The 'networks' block is kept as-is to allow containers to communicate
-networks:
-  default:
-    name: workadventure-net
+version: "3.6"
 
 services:
-    # ----------------------------------------
-    # *** DELETED SERVICE: reverse-proxy ***
-    # The original reverse-proxy (Traefik) service is REMOVED
-    # because Coolify already runs a reverse proxy on ports 80/443.
-    # ----------------------------------------
+  play:
+    image: thecodingmachine/workadventure-play:${VERSION}
+    environment:
+      - DEBUG_MODE
+      - JITSI_URL
+      - JITSI_PRIVATE_MODE
+      - ENABLE_MAP_EDITOR
+      - MAP_EDITOR_ALLOWED_USERS
+      - MAP_EDITOR_ALLOW_ALL_USERS
+      - PUSHER_URL=https://${DOMAIN}/
+      - ICON_URL=/icon
+      - TURN_SERVER
+      - TURN_USER
+      - TURN_PASSWORD
+      - TURN_STATIC_AUTH_SECRET
+      - STUN_SERVER
+      - SKIP_RENDER_OPTIMIZATIONS
+      - MAX_PER_GROUP
+      - MAX_USERNAME_LENGTH
+      - DISABLE_ANONYMOUS
+      - DISABLE_NOTIFICATIONS
+      - SECRET_KEY
+      - API_URL=back:50051
+      - FRONT_URL=/
+      - INTERNAL_MAP_STORAGE_URL=http://map-storage:3000
+      - PUBLIC_MAP_STORAGE_URL=https://${DOMAIN}/map-storage
+      - START_ROOM_URL
+      - OPENID_PROMPT=login
+      - OPENID_WOKA_NAME_POLICY
+      - OPENID_CLIENT_ID
+      - OPENID_CLIENT_SECRET
+      - OPENID_CLIENT_ISSUER
+      - OPENID_PROFILE_SCREEN_PROVIDER
+      - OPENID_SCOPE
+      - OPENID_USERNAME_CLAIM
+      - OPENID_LOCALE_CLAIM
+      - OPENID_LOGOUT_REDIRECT_URL
+      - FALLBACK_LOCALE
+      - ENABLE_CHAT
+      - ENABLE_CHAT_UPLOAD
+      - ENABLE_CHAT_ONLINE_LIST
+      - ENABLE_CHAT_DISCONNECTED_LIST
+      - UPLOADER_URL=/uploader
+      - MAP_STORAGE_API_TOKEN=${MAP_STORAGE_API_TOKEN:-${SECRET_KEY}}
+      - ADMIN_API_URL
+      - ADMIN_API_TOKEN
+      - ROOM_API_PORT=50051
+      - ROOM_API_SECRET_KEY=${ROOM_API_SECRET_KEY}
+      - GRPC_VERBOSITY=ERROR
+      - GRPC_TRACE=all
+      - SENTRY_ORG=${SENTRY_ORG}
+      - SENTRY_PROJECT=${SENTRY_PROJECT}
+      - SENTRY_DSN_FRONT=${SENTRY_DSN_FRONT}
+      - SENTRY_DSN_PUSHER=${SENTRY_DSN_PUSHER}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+      - SENTRY_RELEASE=${SENTRY_RELEASE}
+      - SENTRY_TRACES_SAMPLE_RATE=${SENTRY_TRACES_SAMPLE_RATE}
+      - WOKA_SPEED
+      - FEATURE_FLAG_BROADCAST_AREAS=${FEATURE_FLAG_BROADCAST_AREAS}
+      - KLAXOON_ENABLED=${KLAXOON_ENABLED}
+      - KLAXOON_CLIENT_ID=${KLAXOON_CLIENT_ID}
+      - YOUTUBE_ENABLED=${YOUTUBE_ENABLED}
+      - GOOGLE_DRIVE_ENABLED=${GOOGLE_DRIVE_ENABLED}
+      - GOOGLE_DOCS_ENABLED=${GOOGLE_DOCS_ENABLED}
+      - GOOGLE_SHEETS_ENABLED=${GOOGLE_SHEETS_ENABLED}
+      - GOOGLE_SLIDES_ENABLED=${GOOGLE_SLIDES_ENABLED}
+      - ERASER_ENABLED=${ERASER_ENABLED}
+      - EXCALIDRAW_ENABLED=${EXCALIDRAW_ENABLED}
+      - EXCALIDRAW_DOMAINS=${EXCALIDRAW_DOMAINS}
+      - EMBEDDED_DOMAINS_WHITELIST=${EMBEDDED_DOMAINS_WHITELIST}
+      - CARDS_ENABLED=${CARDS_ENABLED}
+      - TLDRAW_ENABLED=${TLDRAW_ENABLED}
+      - PEER_VIDEO_LOW_BANDWIDTH=${PEER_VIDEO_LOW_BANDWIDTH}
+      - PEER_VIDEO_RECOMMENDED_BANDWIDTH=${PEER_VIDEO_RECOMMENDED_BANDWIDTH}
+      - PEER_SCREEN_SHARE_LOW_BANDWIDTH=${PEER_SCREEN_SHARE_LOW_BANDWIDTH}
+      - PEER_SCREEN_SHARE_RECOMMENDED_BANDWIDTH=${PEER_SCREEN_SHARE_RECOMMENDED_BANDWIDTH}
+      - GOOGLE_DRIVE_PICKER_CLIENT_ID=${GOOGLE_DRIVE_PICKER_CLIENT_ID}
+      - GOOGLE_DRIVE_PICKER_APP_ID=${GOOGLE_DRIVE_PICKER_APP_ID}
+      - MATRIX_API_URI
+      - MATRIX_PUBLIC_URI
+      - MATRIX_ADMIN_USER
+      - MATRIX_ADMIN_PASSWORD
+      - MATRIX_DOMAIN
+    ports:
+      - "3000"
+      - "3001"
+      - "50051"
+    restart: ${RESTART_POLICY}
 
-    # ----------------------------------------
-    # front service (Frontend)
-    # ----------------------------------------
-    front:
-        image: workadventu.re/front:latest
-        restart: always
-        env_file: .env
-        # Removed the 'ports' section to avoid host port conflicts (80:80)
-        expose:
-            - 80
-        # The internal Traefik labels are kept for internal consistency, 
-        # but Coolify's proxy configuration will take precedence.
-        labels:
-            # Traefik labels for front (kept for reference, Coolify will override/re-route)
-            - "traefik.enable=true"
-            - "traefik.http.routers.front.rule=Host(`${DOMAIN}`, `play.${DOMAIN}`)"
-            - "traefik.http.routers.front.entrypoints=websecure"
-            - "traefik.http.routers.front.tls=true"
-            - "traefik.http.services.front.loadbalancer.server.port=80"
-        depends_on:
-            - maps
-            - pusher
-            - back
+  back:
+    image: thecodingmachine/workadventure-back:${VERSION}
+    environment:
+      - PLAY_URL=https://${DOMAIN}
+      - REDIS_HOST=redis
+      - MAP_STORAGE_URL=map-storage:50053
+      - INTERNAL_MAP_STORAGE_URL=http://map-storage:3000
+      - PUBLIC_MAP_STORAGE_URL=https://${DOMAIN}/map-storage
+      - SECRET_KEY
+      - ADMIN_API_TOKEN
+      - TURN_SERVER
+      - TURN_USER
+      - TURN_PASSWORD
+      - TURN_STATIC_AUTH_SECRET
+      - STUN_SERVER
+      - ENABLE_CHAT
+      - ENABLE_CHAT_UPLOAD
+      - PROMETHEUS_AUTHORIZATION_TOKEN
+      - PLAYER_VARIABLES_MAX_TTL
+      - SENTRY_DSN=${SENTRY_DSN_BACK}
+      - SENTRY_RELEASE
+      - SENTRY_TRACES_SAMPLE_RATE
+      - MAX_USERS_FOR_WEBRTC
+      - LIVEKIT_HOST
+      - LIVEKIT_API_KEY
+      - LIVEKIT_API_SECRET
+      - EGRESS_HOST
+    ports:
+      - "8080"
+      - "50051"
+    restart: ${RESTART_POLICY}
 
-    # ----------------------------------------
-    # maps service (Map Storage)
-    # ----------------------------------------
-    maps:
-        image: workadventu.re/map-storage:latest
-        restart: always
-        env_file: .env
-        volumes:
-            - maps:/usr/src/app/data
-        # Removed the 'ports' section to avoid host port conflicts
-        expose:
-            - 8080
-        labels:
-            # Traefik labels for maps (kept for reference, Coolify will override/re-route)
-            - "traefik.enable=true"
-            - "traefik.http.routers.maps.rule=Host(`${MAP_STORAGE_DOMAIN}`)"
-            - "traefik.http.routers.maps.entrypoints=websecure"
-            - "traefik.http.routers.maps.tls=true"
-            - "traefik.http.services.maps.loadbalancer.server.port=8080"
+  uploader:
+    image: thecodingmachine/workadventure-uploader:${VERSION}
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - AWS_BUCKET=${AWS_BUCKET}
+      - AWS_URL=${AWS_URL}
+      - AWS_ENDPOINT=${AWS_ENDPOINT}
+      - REDIS_HOST=${UPLOADER_REDIS_HOST}
+      - REDIS_PORT=${UPLOADER_REDIS_PORT}
+      - ENABLE_CHAT_UPLOAD=${ENABLE_CHAT_UPLOAD}
+      - UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE}
+    ports:
+      - "8080"
+    restart: ${RESTART_POLICY}
 
-    # ----------------------------------------
-    # back service (API Backend)
-    # ----------------------------------------
-    back:
-        image: workadventu.re/back:latest
-        restart: always
-        env_file: .env
-        expose:
-            - 8000 # Internal port, not exposed to host
+  icon:
+    image: matthiasluedtke/iconserver:v3.21.0
+    ports:
+      - "8080"
+    restart: ${RESTART_POLICY}
 
-    # ----------------------------------------
-    # pusher service (WebSockets)
-    # ----------------------------------------
-    pusher:
-        image: workadventu.re/pusher:latest
-        restart: always
-        env_file: .env
-        # Removed the 'ports' section to avoid host port conflicts
-        expose:
-            - 80
-        labels:
-            # Traefik labels for pusher (kept for reference, Coolify will override/re-route)
-            - "traefik.enable=true"
-            - "traefik.http.routers.pusher.rule=Host(`pusher.${DOMAIN}`)"
-            - "traefik.http.routers.pusher.entrypoints=websecure"
-            - "traefik.http.routers.pusher.tls=true"
-            - "traefik.http.services.pusher.loadbalancer.server.port=80"
-        depends_on:
-            - back
+  redis:
+    image: redis:6
+    volumes:
+      - redisdata:/data
+    restart: ${RESTART_POLICY}
 
-    # ----------------------------------------
-    # db service (PostgreSQL Database)
-    # ----------------------------------------
-    db:
-        image: postgres:15-alpine
-        restart: always
-        env_file: .env
-        volumes:
-            - database:/var/lib/postgresql/data
-
-    # ----------------------------------------
-    # migrations service
-    # ----------------------------------------
-    migrations:
-        image: workadventu.re/migrations:latest
-        env_file: .env
-        depends_on:
-            - db
+  map-storage:
+    image: thecodingmachine/workadventure-map-storage:${VERSION}
+    environment:
+      API_URL: back:50051
+      PATH_PREFIX: "/map-storage"
+      ENTITY_COLLECTION_URLS: "https://${DOMAIN}/collections/FurnitureCollection.json,https://${DOMAIN}/collections/OfficeCollection.json"
+      MAP_STORAGE_API_TOKEN: "${MAP_STORAGE_API_TOKEN:-${SECRET_KEY}}"
+    volumes:
+      - map-storage-data:/maps
+    ports:
+      - "3000"
+      - "50053"
+    restart: ${RESTART_POLICY}
 
 volumes:
-    maps:
-    database:
+  redisdata:
+  map-storage-data:
