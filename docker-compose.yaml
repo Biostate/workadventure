@@ -89,6 +89,20 @@ services:
       - "3001"
       - "50051"
     restart: ${RESTART_POLICY}
+    labels:
+      - "traefik.enable=true"
+
+      # Main web
+      - "traefik.http.routers.zion.rule=Host(`zion.epigra.com`)"
+      - "traefik.http.routers.zion.entrypoints=websecure"
+      - "traefik.http.routers.zion.tls=true"
+      - "traefik.http.services.zion.loadbalancer.server.port=3000"
+
+      # WebSocket
+      - "traefik.http.routers.zion-ws.rule=Host(`zion.epigra.com`) && PathPrefix(`/ws`)"
+      - "traefik.http.routers.zion-ws.entrypoints=websecure"
+      - "traefik.http.routers.zion-ws.tls=true"
+      - "traefik.http.services.zion-ws.loadbalancer.server.port=3001"
 
   back:
     image: thecodingmachine/workadventure-back:${VERSION}
