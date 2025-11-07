@@ -89,7 +89,7 @@ services:
       - "3001"
       - "50051"
     restart: ${RESTART_POLICY}
-    llabels:
+    labels:
       # WebSockets (HTTPS, port 3001)
       - "traefik.http.routers.play-ws.rule=HostRegexp(`{domain:.*}`) && PathPrefix(`/ws/`)"
       - "traefik.http.routers.play-ws.entrypoints=websecure"
