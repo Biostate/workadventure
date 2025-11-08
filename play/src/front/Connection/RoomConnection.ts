@@ -86,7 +86,7 @@ import { abortTimeout } from "@workadventure/shared-utils/src/Abort/AbortTimeout
 import { ReceiveEventEvent } from "../Api/Events/ReceiveEventEvent";
 import type { SetPlayerVariableEvent } from "../Api/Events/SetPlayerVariableEvent";
 import { iframeListener } from "../Api/IframeListener";
-import { ABSOLUTE_PUSHER_URL } from "../Enum/ComputedConst";
+import { ABSOLUTE_PUSHER_URL, ABSOLUTE_WEBSOCKET_URL } from "../Enum/ComputedConst";
 import { ENABLE_MAP_EDITOR, UPLOADER_URL } from "../Enum/EnvironmentVariable";
 import { CompanionTextureDescriptionInterface } from "../Phaser/Companion/CompanionTextures";
 import type { WokaTextureDescriptionInterface } from "../Phaser/Entity/PlayerTextures";
@@ -266,7 +266,7 @@ export class RoomConnection implements RoomConnection {
         availabilityStatus: AvailabilityStatus,
         lastCommandId?: string
     ) {
-        const urlObj = new URL("ws/room", ABSOLUTE_PUSHER_URL);
+        const urlObj = new URL("ws/room", ABSOLUTE_WEBSOCKET_URL);
         urlObj.protocol = urlObj.protocol.replace("http", "ws");
 
         const params = urlObj.searchParams;

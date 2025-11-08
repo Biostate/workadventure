@@ -3,6 +3,7 @@ import type { OpidWokaNamePolicy } from "@workadventure/messages";
 export interface FrontConfigurationInterface {
     DEBUG_MODE: boolean;
     PUSHER_URL: string;
+    WEBSOCKET_URL: string | undefined;
     FRONT_URL: string;
     ADMIN_URL: string | undefined;
     ADMIN_BO_URL: string | undefined;
