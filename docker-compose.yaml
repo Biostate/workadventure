@@ -11,6 +11,7 @@ services:
       - MAP_EDITOR_ALLOWED_USERS
       - MAP_EDITOR_ALLOW_ALL_USERS
       - PUSHER_URL=https://ws.${DOMAIN}/
+      - ALLOWED_CORS_ORIGIN=https://${DOMAIN}
       - ICON_URL=/icon
       - TURN_SERVER
       - TURN_USER
