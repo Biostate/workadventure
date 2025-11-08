@@ -105,9 +105,9 @@ services:
       - "traefik.http.routers.play-ws-https.tls.certresolver=letsencrypt"
       # Service definition
       - "traefik.http.services.play-ws.loadbalancer.server.port=3001"
-
-
-
+    depends_on:
+      - back
+      - redis
 
   back:
     image: thecodingmachine/workadventure-back:${VERSION}
