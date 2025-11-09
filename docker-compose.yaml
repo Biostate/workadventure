@@ -8,8 +8,8 @@ services:
       - JITSI_URL
       - JITSI_PRIVATE_MODE
       - ENABLE_MAP_EDITOR
-      - MAP_EDITOR_ALLOWED_USERS=ozgur.ozarpaci@epigra.com,ugur.aydogdu@epigra.com
-      - MAP_EDITOR_ALLOW_ALL_USERS=false
+      - MAP_EDITOR_ALLOWED_USERS=${MAP_EDITOR_ALLOWED_USERS}
+      - MAP_EDITOR_ALLOW_ALL_USERS=${MAP_EDITOR_ALLOW_ALL_USERS}
       - PUSHER_URL=https://${DOMAIN}/
       - ALLOWED_CORS_ORIGIN=https://${DOMAIN}
       - ICON_URL=/icon
@@ -21,7 +21,7 @@ services:
       - SKIP_RENDER_OPTIMIZATIONS
       - MAX_PER_GROUP
       - MAX_USERNAME_LENGTH
-      - DISABLE_ANONYMOUS=true
+      - DISABLE_ANONYMOUS=${DISABLE_ANONYMOUS}
       - DISABLE_NOTIFICATIONS
       - SECRET_KEY
       - API_URL=back:50051
